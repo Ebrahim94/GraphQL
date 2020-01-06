@@ -7,7 +7,7 @@ const Query = {
       user.name.toLowerCase().includes(args.query.toLowerCase())
     );
   },
-  comments(parent, args, ctx, info) {
+  comments(parent, args, { db }, info) {
     return db.comments;
   },
   posts(parent, args, { db }, info) {

@@ -43,6 +43,31 @@ const Mutation = {
 
     return deletedUsers[0];
   },
+  updateUser(parent, args, { db }, info) {
+    const { id, data } = args;
+    const user = db.users.find(user => user.id === id);
+
+    if (!user) {
+      throw new Error('User does not exist');
+    }
+
+    if (typeof data.email === 'string') {
+      const emailTaken = db.users.some(user => user.email === data.email);
+
+      if (emailTaken) {
+        throw new Error('Email Taken');
+      }
+      user.email = data.email;
+    }
+    if (typeof data.name === 'string') {
+      user.name = data.name;
+    }
+    if (typeof data.age !== 'undefined') {
+      user.age = data.age;
+    }
+
+    return user;
+  },
   deleteComment(parent, args, { db }, info) {
     let commentIndex = db.comments.findIndex(comment => comment.id === args.id);
 
@@ -82,6 +107,26 @@ const Mutation = {
 
     return post;
   },
+  updatePost(parent, args, { db }, info) {
+    const { id, data } = args;
+    let post = db.posts.find(post => post.id === id);
+
+    if (!post) {
+      throw new Error('Post does not exist');
+    }
+
+    if (typeof data.title === 'string') {
+      post.title = data.title;
+    }
+    if (typeof data.body === 'string') {
+      post.body = data.body;
+    }
+    if (typeof data.published === 'boolean') {
+      post.published = data.published;
+    }
+
+    return post;
+  },
   createComment(parent, args, { db }, info) {
     const userExists = db.users.some(user => user.id === args.data.author);
     const postExists = db.posts.some(post => post.id === args.data.post);
@@ -100,6 +145,21 @@ const Mutation = {
     };
 
     db.comments.push(comment);
+
+    return comment;
+  },
+  updateComment(parent, args, { db }, info) {
+    const { id, data } = args;
+
+    let comment = db.comments.find(comment => comment.id === id);
+
+    if (!comment) {
+      throw new Error('Comment does not exist');
+    }
+
+    if (typeof data.text === 'string') {
+      comment.text = data.text;
+    }
 
     return comment;
   }
